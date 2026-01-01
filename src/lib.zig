@@ -168,6 +168,18 @@ pub const Key = enum(Int) {
     menu = 348,
     _,
     pub const last: Key = .menu;
+    pub const @" ": Key = .space;
+    pub const @"'": Key = .apostrophe;
+    pub const @",": Key = .comma;
+    pub const @"-": Key = .minus;
+    pub const @".": Key = .period;
+    pub const @"/": Key = .slash;
+    pub const @";": Key = .semicolon;
+    pub const @"=": Key = .equal;
+    pub const @"[": Key = .left_braket;
+    pub const @"\\": Key = .backslash;
+    pub const @"]": Key = .right_braket;
+    pub const @"`": Key = .grave_accent;
 };
 
 pub const Modifier = packed struct(Int) {
