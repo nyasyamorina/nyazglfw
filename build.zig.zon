@@ -1,0 +1,12 @@
+.{
+    .name = .nyazglfw,
+    .version = "0.0.1",
+    .minimum_zig_version = "0.15.2",
+    .fingerprint = 0xb38309c98b67166b,
+
+    .paths = .{
+        "build.zig.zon",
+        "build.zig",
+        "src",
+    },
+}
