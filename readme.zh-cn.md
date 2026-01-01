@@ -22,7 +22,7 @@ pub fn main() void {
     // `hint` will be improved in near future
     glfw.Window.hint(@intFromEnum(glfw.Window.Hint.client_api), @intFromEnum(glfw.ClientApi.no_api));
     glfw.Window.hint(@intFromEnum(glfw.Window.Hint.resizable), @intFromBool(false));
-    const window = glfw.Window.create(.{ .width = 800, .height = 600 }, "HelloWGPU", null, null).?;
+    const window = glfw.Window.create(.{ .width = 800, .height = 600 }, "nyazglfw", null, null).?;
     defer window.destroy();
 
     const framebuffer_size = window.getFramebufferSize();

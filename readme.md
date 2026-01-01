@@ -22,7 +22,7 @@ pub fn main() void {
     // `hint` will be improved in near future
     glfw.Window.hint(@intFromEnum(glfw.Window.Hint.client_api), @intFromEnum(glfw.ClientApi.no_api));
     glfw.Window.hint(@intFromEnum(glfw.Window.Hint.resizable), @intFromBool(false));
-    const window = glfw.Window.create(.{ .width = 800, .height = 600 }, "HelloWGPU", null, null).?;
+    const window = glfw.Window.create(.{ .width = 800, .height = 600 }, "nyazglfw", null, null).?;
     defer window.destroy();
 
     const framebuffer_size = window.getFramebufferSize();
@@ -78,7 +78,7 @@ pub fn build(b: *std.Build) void {
 
 This project is a wrapper of the GLFW api, which dose not contain the implementation of GLFW. You can compile [the source of GLFW](https://github.com/glfw/glfw), or download [the pre-compiled file](https://github.com/glfw/glfw/releases) to obtain the GLFW library. And Linux user can install `glfw3` package from `pacman`, `apt` or other package manager.
 
-Once obtain the GLFW library, add the following in your `build.zig`:
+Once obtain the GLFW library/package, add the following in your `build.zig`:
 
 ```zig
 exe.root_module.linkSystemLibrary("glfw3", .{});
