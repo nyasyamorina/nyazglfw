@@ -43,7 +43,7 @@ pub fn main() void {
 - Run following command in your project:
 
 ```shell
-zig fetch --save #?url
+zig fetch --save https://github.com/nyasyamorina/nyazglfw/archive/refs/heads/main.tar.gz
 ```
 
 - or edit your `build.zig.zon`:
@@ -54,7 +54,7 @@ zig fetch --save #?url
     .dependencies = .{
         // other stuff
         .nyazglfw = .{
-            .url = "?",
+            .url = "https://github.com/nyasyamorina/nyazglfw/archive/refs/heads/main.tar.gz",
             .hash = "<dependency hash>"
         },
     },

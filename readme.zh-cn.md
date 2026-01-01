@@ -43,7 +43,7 @@ pub fn main() void {
 - 在你的项目里运行以下命令：
 
 ```shell
-zig fetch --save #?url
+zig fetch --save https://github.com/nyasyamorina/nyazglfw/archive/refs/heads/main.tar.gz
 ```
 
 - 或者编辑你的 `build.zig.zon`:
@@ -54,7 +54,7 @@ zig fetch --save #?url
     .dependencies = .{
         // other stuff
         .nyazglfw = .{
-            .url = "?",
+            .url = "https://github.com/nyasyamorina/nyazglfw/archive/refs/heads/main.tar.gz",
             .hash = "<dependency hash>"
         },
     },
