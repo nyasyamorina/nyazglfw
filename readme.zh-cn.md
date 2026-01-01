@@ -16,18 +16,36 @@
 const glfw = @import("glfw");
 
 pub fn main() void {
+    // GLFW initialization hinting
+    glfw.InitHint.set.platform(.any);
+
     _ = glfw.init();
     defer glfw.terminate();
 
-    // `hint` will be improved in near future
-    glfw.Window.hint(@intFromEnum(glfw.Window.Hint.client_api), @intFromEnum(glfw.ClientApi.no_api));
-    glfw.Window.hint(@intFromEnum(glfw.Window.Hint.resizable), @intFromBool(false));
+    // window creation hiting
+    glfw.Window.Hint.set.defaults();
+    glfw.Window.Hint.set.clientApi(.no_api);
+    glfw.Window.Hint.set.resizable(false);
+
     const window = glfw.Window.create(.{ .width = 800, .height = 600 }, "nyazglfw", null, null).?;
     defer window.destroy();
 
+    // member method
     const framebuffer_size = window.getFramebufferSize();
     std.debug.print("framebuffer size: {d}x{d}\n", .{framebuffer_size.width, framebuffer_size.height});
 
+    // get window attribute
+    const bit_depths = glfw.Window.Attribute.get.bitDepths(window);
+    std.debug.print("bit depths: {any}\n", .{bit_depths});
+
+    // ... and the another way to get window attribute
+    const msaa_samples = window.getAttrib(.samples);
+    std.debug.print("msaa sample count: {d}\n", .{msaa_samples});
+
+    // set window attribute
+    window.setAttrib(.floating, true); // `glfw.Window.Attribute.set.<attrib>(...)` also exist
+
+    // main loop
     while (!window.shouldClose()) {
         glfw.pollEvents();
         // rendering...

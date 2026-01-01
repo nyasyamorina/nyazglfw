@@ -222,7 +222,7 @@ pub const ClientApi = enum(Int) {
     _,
 };
 
-pub const Robustness = enum(Int) {
+pub const ContextRobustness = enum(Int) {
     no_robustness           = 0,
     no_reset_notification   = 0x00031001,
     lose_context_on_reset   = 0x00031002,
@@ -245,21 +245,21 @@ pub const InputMode = enum(Int) {
     _,
 };
 
-pub const ReleaseBehavior = enum(Int) {
+pub const ContextReleaseBehavior = enum(Int) {
     any     = 0,
     flush   = 0x00035001,
     none    = 0x00035002,
     _,
 };
 
-pub const ContextApi = enum(Int) {
+pub const ContextCreationApi = enum(Int) {
     native  = 0x00036001,
     egl     = 0x00036002,
     osmesa  = 0x00036003,
     _,
 };
 
-pub const AnglePlatform = enum(Int) {
+pub const AnglePlatformType = enum(Int) {
     none        = 0x00037001,
     opengl      = 0x00037002,
     opengles    = 0x00037003,
@@ -296,6 +296,30 @@ pub const InitHint = enum(Int) {
     x11_xcb_vulkan_surface  = 0x00052001,
     wayland_libdecor        = 0x00053001,
     _,
+
+    pub const set = struct {
+        pub inline fn joystickHatButtons(value: bool) void {
+            return api.glfwInitHint(.joystick_hat_buttons, @intFromBool(value));
+        }
+        pub inline fn anglePlatformType(platform_: AnglePlatformType) void {
+            return api.glfwInitHint(.angle_platform_type, @intFromEnum(platform_));
+        }
+        pub inline fn platform(platform_: Platform) void {
+            return api.glfwInitHint(.platform, @intFromEnum(platform_));
+        }
+        pub inline fn cocoaChdirResources(value: bool) void {
+            return api.glfwInitHint(.cocoa_chdir_resources, @intFromBool(value));
+        }
+        pub inline fn cocoaMenuvar(value: bool) void {
+            return api.glfwInitHint(.cocoa_menubar, @intFromBool(value));
+        }
+        pub inline fn x11XcbVulkanSurface(value: bool) void {
+            return api.glfwInitHint(.x11_xcb_vulkan_surface, @intFromBool(value));
+        }
+        pub inline fn waylandLibdecor(value: WaylandLibdecor) void {
+            return api.glfwInitHint(.wayland_libdecor, @intFromEnum(value));
+        }
+    };
 };
 
 pub const Platform = enum(Int) {
@@ -385,6 +409,15 @@ pub const FrameSize = extern struct {
     top: Int,
     right: Int,
     bottom: Int,
+};
+
+pub const BitDepths = extern struct {
+    red: Int,
+    green: Int,
+    blue: Int,
+    alpha: Int,
+    depth: Int,
+    stencil: Int,
 };
 
 
@@ -537,17 +570,416 @@ pub const Window = opaque {
 
         wayland_app_id              = 0x00026001,
         _,
+
+        fn ValueType(comptime hint: Hint) type {
+            return switch (hint) {
+                .focused,
+                .iconified,
+                .resizable,
+                .visible,
+                .decorated,
+                .auto_iconify,
+                .floating,
+                .maximized,
+                .center_cursor,
+                .transparent_framebuffer,
+                .hovered,
+                .focus_on_show,
+                .mouse_passthrough,
+                .stereo,
+                .srgb_capable,
+                .doublebuffer,
+                .opengl_forward_compat,
+                .opengl_context_debug,
+                .context_no_error,
+                .scale_to_monitor,
+                .scale_framebuffer,
+                .cocoa_retina_framebuffer,
+                .cocoa_graphics_switching,
+                .win32_keyboard_menu,
+                .win32_showdefault,
+                => bool,
+
+                .position_x,
+                .position_y,
+                .red_bits,
+                .green_bits,
+                .blue_bits,
+                .alpha_bits,
+                .depth_bits,
+                .stencil_bits,
+                .accum_red_bits,
+                .accum_green_bits,
+                .accum_blue_bits,
+                .accum_alpha_bits,
+                .aux_buffers,
+                .samples,
+                .refresh_rate,
+                .context_version_major,
+                .context_version_minor,
+                .context_revision,
+                => Int,
+
+                .cocoa_frame_name,
+                .x11_class_name,
+                .x11_instance_name,
+                .wayland_app_id,
+                => [*:0]const u8,
+
+                .client_api => ClientApi,
+                .context_robustness => ContextRobustness,
+                .opengl_profile => OpenglProfile,
+                .context_release_behavior => ContextReleaseBehavior,
+                .context_creation_api => ContextCreationApi,
+                else => @compileError("not specity the value type of window hint " ++ @tagName(hint) ++ ", use `api.glfwWindowHint(hint, value)` instead")
+            };
+        }
+
+        pub const set = struct {
+            pub inline fn defaults() void {
+                return api.glfwDefaultWindowHints();
+            }
+
+            pub inline fn focused(value: bool) void {
+                return api.glfwWindowHint(.focused, @intFromBool(value));
+            }
+            pub inline fn iconified(value: bool) void {
+                return api.glfwWindowHint(.iconified, @intFromBool(value));
+            }
+            pub inline fn resizable(value: bool) void {
+                return api.glfwWindowHint(.resizable, @intFromBool(value));
+            }
+            pub inline fn visible(value: bool) void {
+                return api.glfwWindowHint(.visible, @intFromBool(value));
+            }
+            pub inline fn decorated(value: bool) void {
+                return api.glfwWindowHint(.decorated, @intFromBool(value));
+            }
+            pub inline fn autoIconify(value: bool) void {
+                return api.glfwWindowHint(.auto_iconify, @intFromBool(value));
+            }
+            pub inline fn floating(value: bool) void {
+                return api.glfwWindowHint(.floating, @intFromBool(value));
+            }
+            pub inline fn maximized(value: bool) void {
+                return api.glfwWindowHint(.maximized, @intFromBool(value));
+            }
+            pub inline fn centerCursor(value: bool) void {
+                return api.glfwWindowHint(.center_cursor, @intFromBool(value));
+            }
+            pub inline fn transparentFramebuffer(value: bool) void {
+                return api.glfwWindowHint(.transparent_framebuffer, @intFromBool(value));
+            }
+            pub inline fn hovered(value: bool) void {
+                return api.glfwWindowHint(.hovered, @intFromBool(value));
+            }
+            pub inline fn focusOnShow(value: bool) void {
+                return api.glfwWindowHint(.focus_on_show, @intFromBool(value));
+            }
+            pub inline fn mousePassthrough(value: bool) void {
+                return api.glfwWindowHint(.mouse_passthrough, @intFromBool(value));
+            }
+            pub fn position(x: ?Int, y: ?Int) void {
+                if (x) |x_| api.glfwWindowHint(.position_x, x_);
+                if (y) |y_| api.glfwWindowHint(Hint.position_y, y_);
+            }
+
+            pub fn bitDepths(red: ?Int, green: ?Int, blue: ?Int, alpha: ?Int, depth: ?Int, stencil: ?Int) void {
+                if (red)     |r| api.glfwWindowHint(.red_bits, r);
+                if (green)   |g| api.glfwWindowHint(.green_bits, g);
+                if (blue)    |b| api.glfwWindowHint(.blue_bits, b);
+                if (alpha)   |a| api.glfwWindowHint(.alpha_bits, a);
+                if (depth)   |d| api.glfwWindowHint(.depth_bits, d);
+                if (stencil) |s| api.glfwWindowHint(.stencil_bits, s);
+            }
+            pub fn accumulationBitDepths(red: ?Int, green: ?Int, blue: ?Int, alpha: ?Int) void {
+                if (red)     |r| api.glfwWindowHint(.accum_red_bits, r);
+                if (green)   |g| api.glfwWindowHint(.accum_green_bits, g);
+                if (blue)    |b| api.glfwWindowHint(.accum_blue_bits, b);
+                if (alpha)   |a| api.glfwWindowHint(.accum_alpha_bits, a);
+            }
+            pub inline fn auxBuffers(count: Int) void {
+                return api.glfwWindowHint(.aux_buffers, count);
+            }
+            pub inline fn stereo(value: bool) void {
+                return api.glfwWindowHint(.stereo, @intFromBool(value));
+            }
+            pub inline fn samples(count: Int) void {
+                return api.glfwWindowHint(.samples, count);
+            }
+            pub inline fn srgbCapable(value: bool) void {
+                return api.glfwWindowHint(.srgb_capable, @intFromBool(value));
+            }
+            pub inline fn refreshRate(count: Int) void {
+                return api.glfwWindowHint(.refresh_rate, count);
+            }
+            pub inline fn doublebuffer(value: bool) void {
+                return api.glfwWindowHint(.doublebuffer, @intFromBool(value));
+            }
+
+            pub inline fn clientApi(value: ClientApi) void {
+                return api.glfwWindowHint(.client_api, @intFromEnum(value));
+            }
+            pub fn contextVersion(major: ?Int, minor: ?Int, revision: ?Int) void {
+                if (major) |m| api.glfwWindowHint(.context_version_major, m);
+                if (minor) |m| api.glfwWindowHint(.context_version_minor, m);
+                if (revision) |r| api.glfwWindowHint(.context_revision, r);
+            }
+            pub inline fn contextRobustness(value: ContextRobustness) void {
+                return api.glfwWindowHint(.context_robustness, @intFromEnum(value));
+            }
+            pub inline fn openglForwardCompat(value: bool) void {
+                return api.glfwWindowHint(.opengl_forward_compat, @intFromBool(value));
+            }
+            pub inline fn openglContextDebug(value: bool) void {
+                return api.glfwWindowHint(.opengl_context_debug, @intFromBool(value));
+            }
+            pub inline fn openglProfile(value: OpenglProfile) void {
+                return api.glfwWindowHint(.opengl_profile, @intFromEnum(value));
+            }
+            pub inline fn contextReleaseBehavior(value: ContextReleaseBehavior) void {
+                return api.glfwWindowHint(.context_release_behavior, @intFromEnum(value));
+            }
+            pub inline fn contextNoError(value: bool) void {
+                return api.glfwWindowHint(.context_no_error, @intFromBool(value));
+            }
+            pub inline fn contextCreationApi(value: ContextCreationApi) void {
+                return api.glfwWindowHint(.context_creation_api, @intFromEnum(value));
+            }
+            pub inline fn scaleToMonitor(value: bool) void {
+                return api.glfwWindowHint(.scale_to_monitor, @intFromBool(value));
+            }
+            pub inline fn scaleFramebuffer(value: bool) void {
+                return api.glfwWindowHint(.scale_framebuffer, @intFromBool(value));
+            }
+
+            pub inline fn cocoaRetinaFramebuffer(value: bool) void {
+                return api.glfwWindowHint(.cocoa_retina_framebuffer, @intFromBool(value));
+            }
+            pub inline fn cocoaFrameName(name: [*:0]const u8) void {
+                return api.glfwWindowHintString(.cocoa_frame_name, name);
+            }
+            pub inline fn cocoaGraphicsSwitching(value: bool) void {
+                return api.glfwWindowHint(.cocoa_graphics_switching, @intFromBool(value));
+            }
+
+            pub inline fn x11ClassName(name: [*:0]const u8) void {
+                return api.glfwWindowHintString(.x11_class_name, name);
+            }
+            pub inline fn x11InstanceName(name: [*:0]const u8) void {
+                return api.glfwWindowHintString(.x11_instance_name, name);
+            }
+
+            pub inline fn win32KeyboardMenu(value: bool) void {
+                return api.glfwWindowHint(.win32_keyboard_menu, @intFromBool(value));
+            }
+            pub inline fn win32Showdefault(value: bool) void {
+                return api.glfwWindowHint(.win32_showdefault, @intFromBool(value));
+            }
+
+            pub inline fn waylandAppId(name: [*:0]const u8) void {
+                return api.glfwWindowHintString(.wayland_app_id, name);
+            }
+        };
     };
 
-    pub inline fn defaultHints() void {
-        return api.glfwDefaultWindowHints();
+    pub const Attribute = enum(Int) {
+        focused                     = @intFromEnum(Hint.focused),
+        iconified                   = @intFromEnum(Hint.iconified),
+        resizable                   = @intFromEnum(Hint.resizable),
+        visible                     = @intFromEnum(Hint.visible),
+        decorated                   = @intFromEnum(Hint.decorated),
+        auto_iconify                = @intFromEnum(Hint.auto_iconify),
+        floating                    = @intFromEnum(Hint.floating),
+        maximized                   = @intFromEnum(Hint.maximized),
+        transparent_framebuffer     = @intFromEnum(Hint.transparent_framebuffer),
+        hovered                     = @intFromEnum(Hint.hovered),
+        focus_on_show               = @intFromEnum(Hint.focus_on_show),
+        mouse_passthrough           = @intFromEnum(Hint.mouse_passthrough),
+
+        red_bits                    = @intFromEnum(Hint.red_bits),
+        green_bits                  = @intFromEnum(Hint.green_bits),
+        blue_bits                   = @intFromEnum(Hint.blue_bits),
+        alpha_bits                  = @intFromEnum(Hint.alpha_bits),
+        depth_bits                  = @intFromEnum(Hint.depth_bits),
+        stencil_bits                = @intFromEnum(Hint.stencil_bits),
+        samples                     = @intFromEnum(Hint.samples),
+        doublebuffer                = @intFromEnum(Hint.doublebuffer),
+
+        client_api                  = @intFromEnum(Hint.client_api),
+        context_version_major       = @intFromEnum(Hint.context_version_major),
+        context_version_minor       = @intFromEnum(Hint.context_version_minor),
+        context_revision            = @intFromEnum(Hint.context_revision),
+        context_robustness          = @intFromEnum(Hint.context_robustness),
+        opengl_forward_compat       = @intFromEnum(Hint.opengl_forward_compat),
+        opengl_context_debug        = @intFromEnum(Hint.opengl_context_debug),
+        opengl_profile              = @intFromEnum(Hint.opengl_profile),
+        context_release_behavior    = @intFromEnum(Hint.context_release_behavior),
+        context_no_error            = @intFromEnum(Hint.context_no_error),
+        context_creation_api        = @intFromEnum(Hint.context_creation_api),
+        _,
+
+        fn ValueType(comptime attrib: Attribute) type {
+            return Hint.ValueType(@enumFromInt(@intFromEnum(attrib)));
+        }
+
+        pub const get = struct {
+            pub fn focused(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .focused));
+                return b.castTo();
+            }
+            pub fn iconified(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .iconified));
+                return b.castTo();
+            }
+            pub fn resizable(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .resizable));
+                return b.castTo();
+            }
+            pub fn visible(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .visible));
+                return b.castTo();
+            }
+            pub fn decorated(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .decorated));
+                return b.castTo();
+            }
+            pub fn autoIconify(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .auto_iconify));
+                return b.castTo();
+            }
+            pub fn floating(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .floating));
+                return b.castTo();
+            }
+            pub fn maximized(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .maximized));
+                return b.castTo();
+            }
+            pub fn transparentFramebuffer(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .transparent_framebuffer));
+                return b.castTo();
+            }
+            pub fn hovered(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .hovered));
+                return b.castTo();
+            }
+            pub fn focusOnShow(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .focus_on_show));
+                return b.castTo();
+            }
+            pub fn mousePassthrough(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .mouse_passthrough));
+                return b.castTo();
+            }
+
+            pub fn bitDepths(window: *Window) BitDepths {
+                var bit_depths: BitDepths = undefined;
+                bit_depths.red     = api.glfwGetWindowAttrib(window, .red_bits);
+                bit_depths.green   = api.glfwGetWindowAttrib(window, .green_bits);
+                bit_depths.blue    = api.glfwGetWindowAttrib(window, .blue_bits);
+                bit_depths.alpha   = api.glfwGetWindowAttrib(window, .alpha_bits);
+                bit_depths.depth   = api.glfwGetWindowAttrib(window, .depth_bits);
+                bit_depths.stencil = api.glfwGetWindowAttrib(window, .stencil_bits);
+                return bit_depths;
+            }
+            pub inline fn samples(window: *Window) Int {
+                return api.glfwGetWindowAttrib(window, .samples);
+            }
+            pub fn doublebuffer(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .doublebuffer));
+                return b.castTo();
+            }
+
+            pub inline fn clientApi(window: *Window) ClientApi {
+                return @enumFromInt(api.glfwGetWindowAttrib(window, .client_api));
+            }
+            pub fn contextVersion(window: *Window) Version {
+                var v: Version = undefined;
+                v.major = api.glfwGetWindowAttrib(window, .context_version_major);
+                v.minor = api.glfwGetWindowAttrib(window, .context_version_minor);
+                v.revision = api.glfwGetWindowAttrib(window, .context_revision);
+                return v;
+            }
+            pub inline fn contextRobustness(window: *Window) ContextRobustness {
+                return @enumFromInt(api.glfwGetWindowAttrib(window, .context_robustness));
+            }
+            pub fn openglForwardCompat(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .opengl_forward_compat));
+                return b.castTo();
+            }
+            pub fn openglContextDebug(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .opengl_context_debug));
+                return b.castTo();
+            }
+            pub inline fn openglProfile(window: *Window) OpenglProfile {
+                return @enumFromInt(api.glfwGetWindowAttrib(window, .opengl_profile));
+            }
+            pub inline fn contextReleaseBehavior(window: *Window) ContextReleaseBehavior {
+                return @enumFromInt(api.glfwGetWindowAttrib(window, .context_release_behavior));
+            }
+            pub fn contextNoError(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetWindowAttrib(window, .context_no_error));
+                return b.castTo();
+            }
+            pub inline fn contextCreationApi(window: *Window) ContextCreationApi {
+                return @enumFromInt(api.glfwGetWindowAttrib(window, .context_creation_api));
+            }
+        };
+
+        pub const set = struct {
+            pub inline fn resizable(window: *Window, value: bool) void {
+                return api.glfwSetWindowAttrib(window, .resizable, @intFromBool(value));
+            }
+            pub inline fn decorated(window: *Window, value: bool) void {
+                return api.glfwSetWindowAttrib(window, .decorated, @intFromBool(value));
+            }
+            pub inline fn autoIconify(window: *Window, value: bool) void {
+                return api.glfwSetWindowAttrib(window, .auto_iconify, @intFromBool(value));
+            }
+            pub inline fn floating(window: *Window, value: bool) void {
+                return api.glfwSetWindowAttrib(window, .floating, @intFromBool(value));
+            }
+            pub inline fn focusOnShow(window: *Window, value: bool) void {
+                return api.glfwSetWindowAttrib(window, .focus_on_show, @intFromBool(value));
+            }
+        };
+    };
+
+    pub fn getAttrib(self: *Window, comptime attrib: Attribute) Attribute.ValueType(attrib) {
+        switch (attrib) {
+            .focused => return Attribute.get.focused(self),
+            .iconified => return Attribute.get.iconified(self),
+            .resizable => return Attribute.get.resizable(self),
+            .visible => return Attribute.get.visible(self),
+            .decorated => return Attribute.get.decorated(self),
+            .auto_iconify => return Attribute.get.autoIconify(self),
+            .floating => return Attribute.get.floating(self),
+            .transparent_framebuffer => return Attribute.get.transparentFramebuffer(self),
+            .hovered => return Attribute.get.hovered(self),
+            .focus_on_show => return Attribute.get.focusOnShow(self),
+            .samples => return Attribute.get.samples(self),
+            .doublebuffer => return Attribute.get.doublebuffer(self),
+            .client_api => return Attribute.get.clientApi(self),
+            .context_robustness => return Attribute.get.contextRobustness(self),
+            .opengl_forward_compat => return Attribute.get.openglForwardCompat(self),
+            .opengl_context_debug => return Attribute.get.openglContextDebug(self),
+            .opengl_profile => return Attribute.get.openglProfile(self),
+            .context_release_behavior => return Attribute.get.contextReleaseBehavior(self),
+            .context_no_error => return Attribute.get.contextNoError(self),
+            .context_creation_api => return Attribute.get.contextCreationApi(self),
+            inline else => @compileError("should use `Window.Attribute.get.<attrib>(window)` or `api.glfwGetWindowAttrib(window, attrib)` to get this attribute"),
+        }
     }
-    // TODO: figure out what `hint_` can be, and seprate this func into `Window.hint.<hint_>(<value>)`
-    pub inline fn hint(hint_: Int, value: Int) void {
-        return api.glfwWindowHint(hint_, value);
-    }
-    pub inline fn hintString(hint_: Int, value: [*:0]const u8) void {
-        return api.glfwWindowHintString(hint_, value);
+    pub fn setAttrib(self: *Window, comptime attrib: Attribute, value: Attribute.ValueType(attrib)) void {
+        switch (attrib) {
+            .resizable     => Attribute.set.resizable(self, value),
+            .decorated     => Attribute.set.decorated(self, value),
+            .auto_iconify  => Attribute.set.autoIconify(self, value),
+            .floating      => Attribute.set.floating(self, value),
+            .focus_on_show => Attribute.set.focusOnShow(self, value),
+            inline else => @compileError("should use `api.glfwSetWindowAttrib(window, attrib, value)` to set this attribute"),
+        }
     }
 
     pub inline fn create(size: Size, title: [*:0]const u8, monitor: ?*Monitor, share: ?*Window) ?*Window {
@@ -559,6 +991,9 @@ pub const Window = opaque {
 
     pub fn shouldClose(self: *Window) bool {
         return api.glfwWindowShouldClose(self).castTo();
+    }
+    pub inline fn setShouldClose(self: *Window, value: bool) void {
+        return api.glfwSetWindowShouldClose(self, @intFromBool(value));
     }
 
     /// i.e. minimize
@@ -673,14 +1108,6 @@ pub const Window = opaque {
     }
     pub inline fn setCursorPos(self: *Window, pos: Cursor.Pos) void {
         return api.glfwSetCursorPos(self, pos.x, pos.y);
-    }
-
-    // TODO: figure out what `attrib` can be, and seprate this func into `Window.<get|set>_attrib.<attrib>(<value>)`
-    pub inline fn getAttrib(self: *Window, attrib: Hint) Int {
-        return api.glfwGetWindowAttrib(self, attrib);
-    }
-    pub inline fn setAttrib(self: *Window, attrib: Hint, value: Int) void {
-        return api.glfwSetWindowAttrib(self, attrib, value);
     }
 
     pub inline fn getUserPointer(self: *Window) ?*anyopaque {
@@ -939,7 +1366,6 @@ pub const Gamepad = enum(Int) {
         const name = api.glfwGetGamepadName(@intFromEnum(self));
         return std.mem.span(name);
     }
-
     pub fn getState(self: Gamepad) ?State {
         var state: State = undefined;
         const success = api.glfwGetGamepadState(@intFromEnum(self), &state).castTo();
@@ -956,10 +1382,6 @@ pub inline fn terminate() void {
 }
 pub inline fn initAllocator(allocator: ?*const Allocator) void {
     return api.glfwInitAllocator(allocator);
-}
-// TODO: figure out what `hint` can be, and seprate this func into `init_hint.<hint>(<value>)`
-pub inline fn initHint(hint: Int, value: Int) void {
-    return api.glfwInitHint(hint, value);
 }
 
 pub fn getError() GetErrorResult {

@@ -4,7 +4,7 @@ const callback = @import("callback.zig");
 
 pub extern fn glfwInit() glfw.Bool;
 pub extern fn glfwTerminate() void;
-pub extern fn glfwInitHint(hint: glfw.Int, value: glfw.Int) void;
+pub extern fn glfwInitHint(hint: glfw.InitHint, value: glfw.Int) void;
 pub extern fn glfwInitAllocator(allocator: ?*const glfw.Allocator) void;
 //pub extern fn glfwInitVulkanLoader(callback.loader) void; // vk 1.0
 
@@ -34,11 +34,12 @@ pub extern fn glfwGetGammaRamp(monitor: *glfw.Monitor) ?*const glfw.GammaRamp;
 pub extern fn glfwSetGammaRamp(monitor: *glfw.Monitor, ramp: *const glfw.GammaRamp) void;
 
 pub extern fn glfwDefaultWindowHints() void;
-pub extern fn glfwWindowHint(hint: glfw.Int, value: glfw.Int) void;
-pub extern fn glfwWindowHintString(hint: glfw.Int, value: [*:0]const u8) void;
+pub extern fn glfwWindowHint(hint: glfw.Window.Hint, value: glfw.Int) void;
+pub extern fn glfwWindowHintString(hint: glfw.Window.Hint, value: [*:0]const u8) void;
 pub extern fn glfwCreateWindow(width: glfw.Int, height: glfw.Int, title: [*:0]const u8, monitor: ?*glfw.Monitor, share: ?*glfw.Window) ?*glfw.Window;
 pub extern fn glfwDestroyWindow(window: *glfw.Window) void;
 pub extern fn glfwWindowShouldClose(window: *glfw.Window) glfw.Bool;
+pub extern fn glfwSetWindowShouldClose(window: *glfw.Window, value: glfw.Bool) void;
 pub extern fn glfwGetWindowTitle(window: *glfw.Window) ?[*:0]const u8;
 pub extern fn glfwSetWindowTitle(window: *glfw.Window, title: [*:0]const u8) void;
 pub extern fn glfwSetWindowIcon(window: *glfw.Window, count: glfw.Int, images: ?[*]const glfw.Image) void;
@@ -62,8 +63,8 @@ pub extern fn glfwFocusWindow(window: *glfw.Window) void;
 pub extern fn glfwRequestWindowAttention(window: *glfw.Window) void;
 pub extern fn glfwGetWindowMonitor(window: *glfw.Window) ?*glfw.Monitor;
 pub extern fn glfwSetWindowMonitor(window: *glfw.Window, monitor: ?*glfw.Monitor, pos_x: glfw.Int, pos_y: glfw.Int, width: glfw.Int, height: glfw.Int, refresh_rate: glfw.Int) void;
-pub extern fn glfwGetWindowAttrib(window: *glfw.Window, attrib: glfw.Window.Hint) glfw.Int;
-pub extern fn glfwSetWindowAttrib(window: *glfw.Window, attrib: glfw.Window.Hint, value: glfw.Int) void;
+pub extern fn glfwGetWindowAttrib(window: *glfw.Window, attrib: glfw.Window.Attribute) glfw.Int;
+pub extern fn glfwSetWindowAttrib(window: *glfw.Window, attrib: glfw.Window.Attribute, value: glfw.Int) void;
 pub extern fn glfwSetWindowUserPointer(window: *glfw.Window, user_data: ?*anyopaque) void;
 pub extern fn glfwGetWindowUserPointer(window: *glfw.Window) ?*anyopaque;
 pub extern fn glfwSetWindowPosCallback(window: *glfw.Window, cb: ?callback.windowPos) ?callback.windowPos;
