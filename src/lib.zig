@@ -1479,3 +1479,28 @@ pub fn getRequiredInstanceExtensions() ?[]const ?[*:0]const u8 {
     if (count == 0) return null;
     return ptr[0 .. count];
 }
+
+
+
+/// there are several zig vulkan wrappers, and the their types are different (to the compiler)
+pub const vk = struct {
+    pub const PFN_vkGetInstanceProcAddr = *anyopaque;
+    pub const Instance = ?*anyopaque;
+    pub const PhysicalDevice = ?*anyopaque;
+    pub const AllocationCallbacks = anyopaque;
+    pub const SurfaceKHR = ?*anyopaque;
+    pub const Result = enum(Int) { _ };
+};
+
+pub inline fn initVulkanLoader(loader: ?vk.PFN_vkGetInstanceProcAddr) void {
+    return api.glfwInitVulkanLoader(loader);
+}
+pub inline fn getInstanceProcAddress(instance: vk.Instance, proccess_name: [*:0]const u8) ?vkproc {
+    return api.glfwGetInstanceProcAddress(instance, proccess_name);
+}
+pub fn glfwGetPhysicalDevicePresentationSupport(instance: vk.Instance, device: vk.PhysicalDevice, queue_family: u32) bool {
+    return api.glfwGetPhysicalDevicePresentationSupport(instance, device, queue_family).castTo();
+}
+pub inline fn glfwCreateWindowSurface(instance: vk.Instance, window: *Window, vk_alloc_cb: ?*const vk.AllocationCallbacks, out_surface: *vk.SurfaceKHR) vk.Result {
+    return api.glfwCreateWindowSurface(instance, window, vk_alloc_cb, out_surface);
+}

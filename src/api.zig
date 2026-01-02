@@ -1,12 +1,15 @@
 const glfw = @import("lib.zig");
 const callback = @import("callback.zig");
+const vk = glfw.vk;
+
+pub const native = @import("native.zig");
 
 
 pub extern fn glfwInit() glfw.Bool;
 pub extern fn glfwTerminate() void;
 pub extern fn glfwInitHint(hint: glfw.InitHint, value: glfw.Int) void;
 pub extern fn glfwInitAllocator(allocator: ?*const glfw.Allocator) void;
-//pub extern fn glfwInitVulkanLoader(callback.loader) void; // vk 1.0
+pub extern fn glfwInitVulkanLoader(loader: ?vk.PFN_vkGetInstanceProcAddr) void; // vk 1.0
 
 pub extern fn glfwGetVersion(major: ?*glfw.Int, minor: ?*glfw.Int, revision: ?*glfw.Int) void;
 pub extern fn glfwGetVersionString() ?[*:0]const u8;
@@ -139,6 +142,6 @@ pub extern fn glfwExtensionSupported(extension: [*:0]const u8) glfw.Bool;
 pub extern fn glfwGetProcAddress(proccess_name: [*:0]const u8) ?glfw.glproc;
 pub extern fn glfwVulkanSupported() glfw.Bool;
 pub extern fn glfwGetRequiredInstanceExtensions(count: *u32) ?[*]const ?[*:0]const u8;
-//pub extern fn glfwGetInstanceProcAddress(instance, proccess_name) ?glfw.vkproc; // vk 1.0
-//pub extern fn glfwGetPhysicalDevicePresentationSupport(instance, device, queue_family) glfw.Bool; // vk 1.0
-//pub extern fn glfwCreateWindowSurface(instance, window, vk_alloc_cb, out_surface) vk.Result; // vk 1.0
+pub extern fn glfwGetInstanceProcAddress(instance: vk.Instance, proccess_name: [*:0]const u8) ?glfw.vkproc; // vk 1.0
+pub extern fn glfwGetPhysicalDevicePresentationSupport(instance: vk.Instance, device: vk.PhysicalDevice, queue_family: u32) glfw.Bool; // vk 1.0
+pub extern fn glfwCreateWindowSurface(instance: vk.Instance, window: *glfw.Window, vk_alloc_cb: ?*const vk.AllocationCallbacks, out_surface: *vk.SurfaceKHR) vk.Result; // vk 1.0
