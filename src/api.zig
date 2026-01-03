@@ -79,8 +79,8 @@ pub extern fn glfwSetWindowIconifyCallback(window: *glfw.Window, cb: ?callback.w
 pub extern fn glfwSetWindowMaximizeCallback(window: *glfw.Window, cb: ?callback.windowMaximize) ?callback.windowMaximize;
 pub extern fn glfwSetFramebufferSizeCallback(window: *glfw.Window, cb: ?callback.windowFramebufferSize) ?callback.windowFramebufferSize;
 pub extern fn glfwSetWindowContentScaleCallback(window: *glfw.Window, cb: ?callback.windowContentScale) ?callback.windowContentScale;
-pub extern fn glfwGetInputMode(window: *glfw.Window, mode: glfw.InputMode) glfw.Int;
-pub extern fn glfwSetInputMode(window: *glfw.Window, mode: glfw.InputMode, value: glfw.Int) void;
+pub extern fn glfwGetInputMode(window: *glfw.Window, mode: glfw.Window.InputMode) glfw.Int;
+pub extern fn glfwSetInputMode(window: *glfw.Window, mode: glfw.Window.InputMode, value: glfw.Int) void;
 pub extern fn glfwGetKey(window: *glfw.Window, key: glfw.Key) glfw.ActionPadded;
 pub extern fn glfwGetMouseButton(window: *glfw.Window, button: glfw.MouseButton) glfw.ActionPadded;
 pub extern fn glfwGetCursorPos(window: *glfw.Window, pos_x: ?*f64, pos_y: ?*f64) void;

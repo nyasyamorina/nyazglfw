@@ -248,15 +248,6 @@ pub const OpenglProfile = enum(Int) {
     _,
 };
 
-pub const InputMode = enum(Int) {
-    cursor                  = 0x00033001,
-    sticky_keys             = 0x00033002,
-    sticky_mouse_buttons    = 0x00033003,
-    lock_key_mods           = 0x00033004,
-    raw_mouse_motion        = 0x00033005,
-    _,
-};
-
 pub const ContextReleaseBehavior = enum(Int) {
     any     = 0,
     flush   = 0x00035001,
@@ -583,7 +574,7 @@ pub const Window = opaque {
         wayland_app_id              = 0x00026001,
         _,
 
-        fn ValueType(comptime hint: Hint) type {
+        pub fn ValueType(comptime hint: Hint) type {
             return switch (hint) {
                 .focused,
                 .iconified,
@@ -643,7 +634,7 @@ pub const Window = opaque {
                 .opengl_profile => OpenglProfile,
                 .context_release_behavior => ContextReleaseBehavior,
                 .context_creation_api => ContextCreationApi,
-                else => @compileError("not specity the value type of window hint " ++ @tagName(hint) ++ ", use `api.glfwWindowHint(hint, value)` instead")
+                else => @compileError("not specity the value type of window hint " ++ @tagName(hint) ++ ", call api function directy instead")
             };
         }
 
@@ -831,7 +822,7 @@ pub const Window = opaque {
         context_creation_api        = @intFromEnum(Hint.context_creation_api),
         _,
 
-        fn ValueType(comptime attrib: Attribute) type {
+        pub fn ValueType(comptime attrib: Attribute) type {
             return Hint.ValueType(@enumFromInt(@intFromEnum(attrib)));
         }
 
@@ -958,6 +949,68 @@ pub const Window = opaque {
         };
     };
 
+    pub const InputMode = enum(Int) {
+        cursor                  = 0x00033001,
+        sticky_keys             = 0x00033002,
+        sticky_mouse_buttons    = 0x00033003,
+        lock_key_mods           = 0x00033004,
+        raw_mouse_motion        = 0x00033005,
+        _,
+
+        pub fn ValueType(comptime mode: InputMode) type {
+            return switch (mode) {
+                .sticky_keys,
+                .sticky_mouse_buttons,
+                .lock_key_mods,
+                .raw_mouse_motion,
+                => bool,
+
+                .cursor => Cursor.Visibility,
+                else => @compileError("not specity the value type of input mode " ++ @tagName(mode) ++ ", call api function directy instead")
+            };
+        }
+
+        pub const get = struct {
+            pub inline fn cursor(window: *Window) Cursor.Visibility {
+                return @enumFromInt(api.glfwGetInputMode(window, .cursor));
+            }
+            pub fn stickyKeys(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetInputMode(window, .sticky_keys));
+                return b.castTo();
+            }
+            pub fn stickyMouseButtons(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetInputMode(window, .sticky_mouse_buttons));
+                return b.castTo();
+            }
+            pub fn lockKeyMods(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetInputMode(window, .lock_key_mods));
+                return b.castTo();
+            }
+            pub fn rawMouseMotion(window: *Window) bool {
+                const b: Bool = @enumFromInt(api.glfwGetInputMode(window, .raw_mouse_motion));
+                return b.castTo();
+            }
+        };
+
+        pub const set = struct {
+            pub inline fn cursor(window: *Window, value: Cursor.Visibility) void {
+                return api.glfwSetInputMode(window, .cursor, @intFromEnum(value));
+            }
+            pub inline fn stickyKeys(window: *Window, value: bool) void {
+                return api.glfwSetInputMode(window, .sticky_keys, @intFromBool(value));
+            }
+            pub inline fn stickyMouseButtons(window: *Window, value: bool) void {
+                return api.glfwSetInputMode(window, .sticky_mouse_buttons, @intFromBool(value));
+            }
+            pub inline fn lockKeyMods(window: *Window, value: bool) void {
+                return api.glfwSetInputMode(window, .lock_key_mods, @intFromBool(value));
+            }
+            pub inline fn rawMouseMotion(window: *Window, value: bool) void {
+                return api.glfwSetInputMode(window, .raw_mouse_motion, @intFromBool(value));
+            }
+        };
+    };
+
     pub fn getAttrib(self: *Window, comptime attrib: Attribute) Attribute.ValueType(attrib) {
         switch (attrib) {
             .focused => return Attribute.get.focused(self),
@@ -994,6 +1047,27 @@ pub const Window = opaque {
         }
     }
 
+    pub fn getInputMode(self: *Window, comptime mode: InputMode) InputMode.ValueType(mode) {
+        switch (mode) {
+            .cursor => return InputMode.get.cursor(self),
+            .sticky_keys => return InputMode.get.stickyKeys(self),
+            .sticky_mouse_buttons => return InputMode.get.stickyMouseButtons(self),
+            .lock_key_mods => return InputMode.get.lockKeyMods(self),
+            .raw_mouse_motion => return InputMode.get.rawMouseMotion(self),
+            inline else => @compileError("should use `api.glfwGetInputMode(window, mode)` to get this input mode"),
+        }
+    }
+    pub fn setInputMode(self: *Window, comptime mode: InputMode, value: InputMode.ValueType(mode)) void {
+        switch (mode) {
+            .cursor => InputMode.set.cursor(self, value),
+            .sticky_keys => InputMode.set.stickyKeys(self, value),
+            .sticky_mouse_buttons => InputMode.set.stickyMouseButtons(self, value),
+            .lock_key_mods => InputMode.set.lockKeyMods(self, value),
+            .raw_mouse_motion => InputMode.set.rawMouseMotion(self, value),
+            inline else => @compileError("should use `api.glfwSetInputMode(window, mode)` to set this input mode"),
+        }
+    }
+
     pub inline fn create(size: Size, title: [*:0]const u8, monitor: ?*Monitor, share: ?*Window) ?*Window {
         return api.glfwCreateWindow(size.width, size.height, title, monitor, share);
     }
@@ -1005,7 +1079,7 @@ pub const Window = opaque {
         return api.glfwWindowShouldClose(self).castTo();
     }
     pub inline fn setShouldClose(self: *Window, value: bool) void {
-        return api.glfwSetWindowShouldClose(self, @intFromBool(value));
+        return api.glfwSetWindowShouldClose(self, @enumFromInt(@intFromBool(value)));
     }
 
     /// i.e. minimize
@@ -1104,13 +1178,6 @@ pub const Window = opaque {
     }
     pub inline fn setMonitor(self: *Window, monitor: ?*Monitor, pos: Pos, size: Size, refresh_rate: ?Int) void {
         return api.glfwSetWindowMonitor(self, monitor, pos.x, pos.y, size.width, size.height, refresh_rate orelse dont_care);
-    }
-
-    pub inline fn getInputMode(self: *Window, mode: InputMode) Int {
-        return api.glfwGetInputMode(self, mode);
-    }
-    pub inline fn setInputMode(self: *Window, mode: InputMode, value: Int) void {
-        return api.glfwSetInputMode(self, mode, value);
     }
 
     pub fn getCursorPos(self: *Window) Cursor.Pos {
