@@ -1551,23 +1551,33 @@ pub fn getRequiredInstanceExtensions() ?[]const ?[*:0]const u8 {
 
 /// there are several zig vulkan wrappers, and the their types are different (to the compiler)
 pub const vk = struct {
+    const builtin = @import("builtin");
+
+    /// from [vulkan-zig](https://github.com/Snektron/vulkan-zig/tree/master)
+    pub const call_conv: std.builtin.CallingConvention = if (builtin.os.tag == .windows and builtin.cpu.arch == .x86)
+        .winapi
+    else if (builtin.abi == .android and (builtin.cpu.arch.isArm() or builtin.cpu.arch.isThumb()) and std.Target.arm.featureSetHas(builtin.cpu.features, .has_v7) and builtin.cpu.arch.ptrBitWidth() == 32)
+        .arm_aapcs_vfp
+    else
+        .c;
+
     pub const PFN_vkGetInstanceProcAddr = *anyopaque;
     pub const Instance = ?*anyopaque;
     pub const PhysicalDevice = ?*anyopaque;
     pub const AllocationCallbacks = anyopaque;
     pub const SurfaceKHR = ?*anyopaque;
-    pub const Result = enum(Int) { _ };
+    pub const Result = enum(Int) { success = 0, _ };
 };
 
-pub inline fn initVulkanLoader(loader: ?vk.PFN_vkGetInstanceProcAddr) void {
+pub fn initVulkanLoader(loader: ?vk.PFN_vkGetInstanceProcAddr) callconv(vk.call_conv) void {
     return api.glfwInitVulkanLoader(loader);
 }
-pub inline fn getInstanceProcAddress(instance: vk.Instance, proccess_name: [*:0]const u8) ?vkproc {
+pub fn getInstanceProcAddress(instance: vk.Instance, proccess_name: [*:0]const u8) callconv(vk.call_conv) ?vkproc {
     return api.glfwGetInstanceProcAddress(instance, proccess_name);
 }
 pub fn glfwGetPhysicalDevicePresentationSupport(instance: vk.Instance, device: vk.PhysicalDevice, queue_family: u32) bool {
     return api.glfwGetPhysicalDevicePresentationSupport(instance, device, queue_family).castTo();
 }
-pub inline fn glfwCreateWindowSurface(instance: vk.Instance, window: *Window, vk_alloc_cb: ?*const vk.AllocationCallbacks, out_surface: *vk.SurfaceKHR) vk.Result {
+pub fn glfwCreateWindowSurface(instance: vk.Instance, window: *Window, vk_alloc_cb: ?*const vk.AllocationCallbacks, out_surface: *vk.SurfaceKHR) callconv(vk.call_conv) vk.Result {
     return api.glfwCreateWindowSurface(instance, window, vk_alloc_cb, out_surface);
 }
