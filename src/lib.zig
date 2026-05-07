@@ -7,8 +7,8 @@ const _ = {
 };
 
 // `c_int` is not used in daily, so determite its size in comptime, normally it is 32-bit
-pub const Int = @Type(.{ .int = .{ .bits = 8 * @sizeOf(c_int), .signedness = .signed } });
-pub const UInt = @Type(.{ .int = .{ .bits = 8 * @sizeOf(c_int), .signedness = .unsigned } });
+pub const Int = @Int(.signed, 8 * @sizeOf(c_int));
+pub const UInt = @Int(.unsigned, 8 * @sizeOf(c_int));
 
 
 pub const version = struct {
@@ -41,7 +41,7 @@ pub const Action = enum(u8)  {
 };
 pub const ActionPadded = packed struct(Int) {
     action: Action,
-    _pad: @Type(.{ .int = .{ .signedness = .unsigned, .bits = @typeInfo(Int).int.bits - 8 } }) = 0,
+    _pad: @Int(.unsigned, @typeInfo(Int).int.bits - 8) = 0,
 };
 
 pub const Key = enum(Int) {
@@ -189,7 +189,7 @@ pub const Modifier = packed struct(Int) {
     super: bool = false,
     caps_lock: bool = false,
     num_lock: bool = false,
-    _pad: @Type(.{ .int = .{ .signedness = .unsigned, .bits = @typeInfo(Int).int.bits - 6 } }) = 0,
+    _pad: @Int(.unsigned, @typeInfo(Int).int.bits - 6) = 0,
 };
 
 pub const MouseButton = enum(Int) {
