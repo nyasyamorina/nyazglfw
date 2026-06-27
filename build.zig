@@ -13,6 +13,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/lib.zig"),
         .optimize = optimize,
         .target = target,
+        .link_libc = true,
         .imports = &.{
             .{ .name = "build_options", .module = options.createModule() },
         },
