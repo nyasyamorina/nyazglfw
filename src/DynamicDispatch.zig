@@ -56,7 +56,7 @@ pub const warpper = struct {
     pub fn glfwTerminate() void { return dispatch.glfwTerminate.?(); }
     pub fn glfwInitHint(hint: types.InitHint, value: types.Int) void { return dispatch.glfwInitHint.?(hint, value); }
     pub fn glfwInitAllocator(allocator: ?*const types.Allocator) void { return dispatch.glfwInitAllocator.?(allocator); }
-    pub fn glfwInitVulkanLoader(loader: ?types.vk.PFN_vkGetInstanceProcAddr) void { return dispatch.glfwInitVulkanLoader.?(loader); }
+    pub fn glfwInitVulkanLoader(loader: ?types.PFN_vkGetInstanceProcAddr) void { return dispatch.glfwInitVulkanLoader.?(loader); }
 
     pub fn glfwGetVersion(major: ?*types.Int, minor: ?*types.Int, revision: ?*types.Int) void { return dispatch.glfwGetVersion.?(major, minor, revision); }
     pub fn glfwGetVersionString() ?[*:0]const u8 { return dispatch.glfwGetVersionString.?(); }
@@ -168,7 +168,7 @@ pub const warpper = struct {
     pub fn glfwSetJoystickCallback(cb: ?types.joystickCallback) ?types.joystickCallback { return dispatch.glfwSetJoystickCallback.?(cb); }
     pub fn glfwUpdateGamepadMappings(string: [*:0]const u8) types.Bool { return dispatch.glfwUpdateGamepadMappings.?(string); }
     pub fn glfwGetGamepadName(jid: types.Int) ?[*:0]const u8 { return dispatch.glfwGetGamepadName.?(jid); }
-    pub fn glfwGetGamepadState(jid: types.Int, state: *types.Gamepad.State) types.Bool { return dispatch.glfwGetGamepadState.?(jid, state); }
+    pub fn glfwGetGamepadState(jid: types.Int, state: *types.GamepadState) types.Bool { return dispatch.glfwGetGamepadState.?(jid, state); }
 
     pub fn glfwSetClipboardString(window: ?*types.Window, string: [*:0]const u8) void { return dispatch.glfwSetClipboardString.?(window, string); }
     pub fn glfwGetClipboardString(window: ?*types.Window) ?[*:0]const u8 { return dispatch.glfwGetClipboardString.?(window); }

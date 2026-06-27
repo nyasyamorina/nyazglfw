@@ -714,19 +714,19 @@ pub const Window = opaque {
 
         pub const set = struct {
             pub inline fn cursor(window: *Window, value: Cursor.Visibility) void {
-                return api.glfwSetInputMode(window, .cursor, @intFromEnum(value));
+                return api.glfwSetInputMode(@ptrCast(window), .cursor, @intFromEnum(value));
             }
             pub inline fn stickyKeys(window: *Window, value: bool) void {
-                return api.glfwSetInputMode(window, .sticky_keys, @intFromBool(value));
+                return api.glfwSetInputMode(@ptrCast(window), .sticky_keys, @intFromBool(value));
             }
             pub inline fn stickyMouseButtons(window: *Window, value: bool) void {
-                return api.glfwSetInputMode(window, .sticky_mouse_buttons, @intFromBool(value));
+                return api.glfwSetInputMode(@ptrCast(window), .sticky_mouse_buttons, @intFromBool(value));
             }
             pub inline fn lockKeyMods(window: *Window, value: bool) void {
-                return api.glfwSetInputMode(window, .lock_key_mods, @intFromBool(value));
+                return api.glfwSetInputMode(@ptrCast(window), .lock_key_mods, @intFromBool(value));
             }
             pub inline fn rawMouseMotion(window: *Window, value: bool) void {
-                return api.glfwSetInputMode(window, .raw_mouse_motion, @intFromBool(value));
+                return api.glfwSetInputMode(@ptrCast(window), .raw_mouse_motion, @intFromBool(value));
             }
         };
     };
@@ -789,7 +789,7 @@ pub const Window = opaque {
     }
 
     pub inline fn create(size: Size, title: [*:0]const u8, monitor: ?*Monitor, share: ?*Window) ?*Window {
-        return @ptrCast(api.glfwCreateWindow(size.width, size.height, title, monitor, share));
+        return @ptrCast(api.glfwCreateWindow(size.width, size.height, title, @ptrCast(monitor), @ptrCast(share)));
     }
     pub inline fn destroy(self: *Window) void {
         return api.glfwDestroyWindow(@ptrCast(self));
@@ -893,7 +893,7 @@ pub const Window = opaque {
     }
 
     pub inline fn getMonitor(self: *Window) ?*Monitor {
-        return api.glfwGetWindowMonitor(@ptrCast(self));
+        return @ptrCast(api.glfwGetWindowMonitor(@ptrCast(self)));
     }
     pub inline fn setMonitor(self: *Window, monitor: ?*Monitor, pos: Pos, size: Size, refresh_rate: ?types.Int) void {
         return api.glfwSetWindowMonitor(@ptrCast(self), @ptrCast(monitor), pos.x, pos.y, size.width, size.height, refresh_rate orelse dont_care);
@@ -982,10 +982,10 @@ pub const Cursor = opaque {
     pub const Visibility = types.CursorVisibility;
 
     pub inline fn create(image: Image, hotspot: Cursor.Pos) ?*Cursor {
-        return api.glfwCreateCursor(&image, hotspot.x, hotspot.y);
+        return @ptrCast(api.glfwCreateCursor(&image, hotspot.x, hotspot.y));
     }
     pub inline fn createStandard(shape: Cursor.Shape) ?*Cursor {
-        return api.glfwCreateStandardCursor(shape);
+        return @ptrCast(api.glfwCreateStandardCursor(shape));
     }
 
     pub inline fn destroy(self: *Cursor) void {
@@ -1075,7 +1075,7 @@ pub const Gamepad = enum(types.Int) {
     }
     pub fn getState(self: Gamepad) ?State {
         var state: State = undefined;
-        const success = api.glfwGetGamepadState(@intFromEnum(self), &state).castTo();
+        const success = api.glfwGetGamepadState(@intFromEnum(self), @ptrCast(&state)).castTo();
         return if (success) state else null;
     }
 };
@@ -1127,10 +1127,10 @@ pub inline fn getKeyScancode(key: Key) types.Int {
 }
 
 pub inline fn setClipboardString(window: ?*Window, string: [*:0]const u8) void {
-    return api.glfwSetClipboardString(window, string);
+    return api.glfwSetClipboardString(@ptrCast(window), string);
 }
 pub inline fn getClipboardString(window: ?*Window) ?[*:0]const u8 {
-    return api.glfwGetClipboardString(window);
+    return api.glfwGetClipboardString(@ptrCast(window));
 }
 
 pub inline fn getTime() f64 {
@@ -1174,7 +1174,7 @@ pub fn getRequiredInstanceExtensions() ?[]const ?[*:0]const u8 {
     return ptr[0 .. count];
 }
 
-pub fn initVulkanLoader(loader: ?types.vk.PFN_vkGetInstanceProcAddr) void {
+pub fn initVulkanLoader(loader: ?types.PFN_vkGetInstanceProcAddr) void {
     return api.glfwInitVulkanLoader(loader);
 }
 pub fn getInstanceProcAddress(instance: types.vk.Instance, proccess_name: [*:0]const u8) ?types.vkproc {
@@ -1184,5 +1184,5 @@ pub fn glfwGetPhysicalDevicePresentationSupport(instance: types.vk.Instance, dev
     return api.glfwGetPhysicalDevicePresentationSupport(instance, device, queue_family).castTo();
 }
 pub fn glfwCreateWindowSurface(instance: types.vk.Instance, window: *Window, vk_alloc_cb: ?*const types.vk.AllocationCallbacks, out_surface: *types.vk.SurfaceKHR) types.vk.Result {
-    return api.glfwCreateWindowSurface(instance, window, vk_alloc_cb, out_surface);
+    return api.glfwCreateWindowSurface(instance, @ptrCast(window), vk_alloc_cb, out_surface);
 }

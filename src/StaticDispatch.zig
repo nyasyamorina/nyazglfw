@@ -5,7 +5,7 @@ pub extern fn glfwInit() types.Bool;
 pub extern fn glfwTerminate() void;
 pub extern fn glfwInitHint(hint: types.InitHint, value: types.Int) void;
 pub extern fn glfwInitAllocator(allocator: ?*const types.Allocator) void;
-pub extern fn glfwInitVulkanLoader(loader: ?types.vk.PFN_vkGetInstanceProcAddr) void; // vk 1.0
+pub extern fn glfwInitVulkanLoader(loader: ?types.PFN_vkGetInstanceProcAddr) void; // vk 1.0
 
 pub extern fn glfwGetVersion(major: ?*types.Int, minor: ?*types.Int, revision: ?*types.Int) void;
 pub extern fn glfwGetVersionString() ?[*:0]const u8;
@@ -117,7 +117,7 @@ pub extern fn glfwJoystickIsGamepad(jid: types.Int) types.Bool;
 pub extern fn glfwSetJoystickCallback(cb: ?types.joystickCallback) ?types.joystickCallback;
 pub extern fn glfwUpdateGamepadMappings(string: [*:0]const u8) types.Bool;
 pub extern fn glfwGetGamepadName(jid: types.Int) ?[*:0]const u8;
-pub extern fn glfwGetGamepadState(jid: types.Int, state: *types.Gamepad.State) types.Bool;
+pub extern fn glfwGetGamepadState(jid: types.Int, state: *types.GamepadState) types.Bool;
 
 pub extern fn glfwSetClipboardString(window: ?*types.Window, string: [*:0]const u8) void;
 pub extern fn glfwGetClipboardString(window: ?*types.Window) ?[*:0]const u8;

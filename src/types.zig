@@ -19,6 +19,7 @@ pub const vk = if (@hasDecl(@import("root"), "vk")) @import("root").vk else stru
     pub const SurfaceKHR = ?*anyopaque;
     pub const Result = enum(Int) { success = 0, _ };
 };
+pub const PFN_vkGetInstanceProcAddr = if (@hasDecl(vk, "InstanceProxy")) vk.PfnGetInstanceProcAddr else vk.PFN_vkGetInstanceProcAddr;
 
 
 const _ = {
@@ -610,9 +611,9 @@ pub const deallocateCallback = *const fn(block: ?*anyopaque, user_data: ?*anyopa
 
 pub const glfwInit = *const fn() callconv(call_conv) Bool;
 pub const glfwTerminate = *const fn() callconv(call_conv) void;
-pub const glfwInitHint = *const fn(hint: InitHint, value: Int) callconv(call_conv) Bool;
-pub const glfwInitAllocator = *const fn(allocator: ?*const Allocator) callconv(call_conv) Bool;
-pub const glfwInitVulkanLoader = *const fn(loader: ?vk.PFN_vkGetInstanceProcAddr) callconv(call_conv) Bool; // vk 1.0
+pub const glfwInitHint = *const fn(hint: InitHint, value: Int) callconv(call_conv) void;
+pub const glfwInitAllocator = *const fn(allocator: ?*const Allocator) callconv(call_conv) void;
+pub const glfwInitVulkanLoader = *const fn(loader: ?PFN_vkGetInstanceProcAddr) callconv(call_conv) void; // vk 1.0
 
 pub const glfwGetVersion = *const fn(major: ?*Int, minor: ?*Int, revision: ?*Int) callconv(call_conv) void;
 pub const glfwGetVersionString = *const fn() callconv(call_conv) ?[*:0]const u8;
