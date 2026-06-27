@@ -970,6 +970,11 @@ pub const Window = opaque {
     pub inline fn swapBuffers(self: *Window) void {
         return api.glfwSwapBuffers(@ptrCast(self));
     }
+
+    pub inline fn createSurface(self: *Window, instance: types.vk.Instance, vk_alloc_cb: ?*const types.vk.AllocationCallbacks, out_surface: *types.vk.SurfaceKHR) types.vk.Result {
+        return api.glfwCreateWindowSurface(instance, @ptrCast(self), vk_alloc_cb, out_surface);
+        // TODO better return and error handling for `vulkan-zig`
+    }
 };
 
 pub const Cursor = opaque {
@@ -1174,15 +1179,12 @@ pub fn getRequiredInstanceExtensions() ?[]const ?[*:0]const u8 {
     return ptr[0 .. count];
 }
 
-pub fn initVulkanLoader(loader: ?types.PFN_vkGetInstanceProcAddr) void {
+pub inline fn initVulkanLoader(loader: ?types.PFN_vkGetInstanceProcAddr) void {
     return api.glfwInitVulkanLoader(loader);
 }
-pub fn getInstanceProcAddress(instance: types.vk.Instance, proccess_name: [*:0]const u8) ?types.vkproc {
+pub inline fn getInstanceProcAddress(instance: types.vk.Instance, proccess_name: [*:0]const u8) ?types.vkproc {
     return api.glfwGetInstanceProcAddress(instance, proccess_name);
 }
-pub fn glfwGetPhysicalDevicePresentationSupport(instance: types.vk.Instance, device: types.vk.PhysicalDevice, queue_family: u32) bool {
+pub fn getPhysicalDevicePresentationSupport(instance: types.vk.Instance, device: types.vk.PhysicalDevice, queue_family: u32) bool {
     return api.glfwGetPhysicalDevicePresentationSupport(instance, device, queue_family).castTo();
-}
-pub fn glfwCreateWindowSurface(instance: types.vk.Instance, window: *Window, vk_alloc_cb: ?*const types.vk.AllocationCallbacks, out_surface: *types.vk.SurfaceKHR) types.vk.Result {
-    return api.glfwCreateWindowSurface(instance, @ptrCast(window), vk_alloc_cb, out_surface);
 }
